@@ -1,7 +1,7 @@
 ---
 type: docs
-title: "Tutorial: Getting started with Kubernetes: Use Helm to run your first app"
-linkTitle: "Existing Kubernetes application"
+title: "Tutorial: Use Helm to run your first app"
+linkTitle: "Helm application"
 weight: 10
 description: "Take a tour of Radius by updating an existing Helm chart to add Radius support."
 categories: "Tutorial"
@@ -61,7 +61,6 @@ rad init
 
 > Select 'No' when prompted to create an application.
 
-
 ## 3. Understand and deploy the application
 
 Navigate to the `./Chart` folder and browse its contents. This contains a Helm chart for the application that you will modify.
@@ -109,14 +108,14 @@ You can deploy this application for the first time by following these steps:
 - Install the Helm chart.
 
 {{< alert title="💡 Redis" color="info" >}}
-For now you're not going to actually deploy Redis, the URL in this step is fake. You will deploy Redis using a Recipe later in the tutorial.
+For now you're not going to actually deploy Redis, the URL in this step is fake. You will deploy Redis using a Recipe later in the tutorial that will replace the fake URL contained within `redis-secret`.
 {{< /alert >}}
 
 Complete these steps by running the following commands:
 
 ```bash
 kubectl create namespace demo
-kubectl create secret generic --namespace demo --from-literal=url=redis://redis-master:6379 redis-secret 
+kubectl create secret generic --namespace demo --from-literal=url=redis://fake-server redis-secret 
 helm upgrade demo ./Chart -n demo --install
 ```
 
