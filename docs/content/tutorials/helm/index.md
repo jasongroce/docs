@@ -22,7 +22,7 @@ This tutorial will teach you the following about Radius:
 - [Helm](https://helm.sh/docs/intro/install/)
 - [Setup a supported Kubernetes cluster]({{< ref "/guides/operations/kubernetes/overview#supported-clusters" >}})
 
-## 1. Clone and open the sample code
+## Step 1. Clone and open the sample code
 
 {{< tabs "Codespace" "Local machine" >}}
 
@@ -51,7 +51,7 @@ cd ./samples/samples/demo
 {{< /tabs >}}
 
 
-## 2. Initialize Radius
+## Step 2. Initialize Radius
 
 Initialize Radius. For this example, answer **NO** when asked whether to set up an application: 
 
@@ -61,7 +61,7 @@ rad init
 
 > Select 'No' when prompted to create an application.
 
-## 3. Understand and deploy the application
+## Step 3. Understand and deploy the application
 
 Navigate to the `./Chart` folder and browse its contents. This contains a Helm chart for the application that you will modify.
 
@@ -180,7 +180,7 @@ Over the next few steps you will update this application to use Radius so that:
 
 From here you will go through a series of steps to incrementally add more Radius features to the application.
 
-## 4. Add Radius
+## Step 4. Add Radius
 
 Make sure the `app.yaml` file from `./demo/Chart/templates/app.yaml` is open in your editor. You will make some edits to this file to enable Radius.
 
@@ -269,7 +269,7 @@ This means that Radius has found the Kubernetes `Deployment` running your contai
 Radius will use the Kubernetes namespace as the application name by default. 
 {{< /alert >}}
 
-## 5. Add Recipe
+## Step 5. Add Recipe
 
 This step will add a database (Redis Cache) to the application.
 
@@ -455,7 +455,7 @@ type: Opaque
 The actual values like `connectionString` are Base64 encoded in this display. The `url` value in this secret is being used by the container to connect to the Redis Cache. For each type of Recipe, Radius stores the most-commonly used connection information for the convenience of application developers.
 
 
-## 6. Add Connection
+## Step 6. Add Connection
 
 At this point you have added Radius to your existing container and used a Recipe to create a Redis Cache. In this step, you will use Radius Connections to inject settings into the container instead of explicitly managing a secret.
 
