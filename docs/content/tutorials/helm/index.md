@@ -606,7 +606,7 @@ Resources:
 
 ```
 
-## 7. Try it out
+## Step 7. Try it out
 
 In this step you can access the application and explore its features. Since the container is running inside Kubernetes, you need to run a port-forward to use it locally.
 
