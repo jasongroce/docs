@@ -3,19 +3,18 @@ type: docs
 title: "Tutorial: Getting started with Kubernetes: Use Helm to run your first app"
 linkTitle: "Existing Kubernetes application"
 weight: 10
-description: "Take a tour of Radius by updating an existing Helm chart."
+description: "Take a tour of Radius by updating an existing Helm chart to add Radius support."
 categories: "Tutorial"
 tags : ["kubernetes", "helm"]
 ---
 
-This tutorial will teach you the following about Radius
+This tutorial will teach you the following about Radius:
 
-* How to use update a Helm chart to include an application in Radius.
-* How to use features like Recipes and Connections from Kubernetes YAML or Helm.
+* How to use update a Helm chart to include its resources in a Radius application
+* How to use features like Recipes and Connections within Kubernetes YAML or Helm.
 
-**Estimated time to complete: 10 min**
 
-<img src="diagram.png" alt="Diagram of the application and its resources" width=500px >
+{{< image src="diagram.png" alt="Diagram of the application and its resources" width="500px" >}}
 
 ## Prerequisites
 
@@ -25,26 +24,27 @@ This tutorial will teach you the following about Radius
 
 ## 1. Clone and open the sample code
 
-{{< tabs "Codespaces" "non-Codespaces" >}}
+{{< tabs "Codespace" "Local machine" >}}
 
 {{% codetab %}}
 
-If you are using the Radius codespace you should already have the application cloned locally. Use the terminal to navigate to the `./demo/` directory:
+It's easy and free to get up and running with a Radius Codespace in GitHub. Spin up a Radius environment in seconds with the following link:
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/radius-project/samples)
+
+Once launched you should already have the application cloned locally. Use the terminal to navigate to the `./demo/` directory:
 
 ```bash
-cd ./demo
+cd ./samples/demo
 ```
 
 {{% /codetab %}}
-
-
-
 {{% codetab %}}
 Use the terminal to clone the `samples` repository locally and navigate to the `./samples/demo` directory:
 
 ```bash
 git clone https://github.com/radius-project/samples.git
-cd ./samples/demo
+cd ./samples/samples/demo
 ```
 {{% /codetab %}}
 
@@ -59,12 +59,12 @@ Initialize Radius. For this example, answer **NO** when asked whether to set up 
 rad init
 ```
 
-   **Select 'No' when prompted to create an application.**
+> Select 'No' when prompted to create an application.
 
 
 ## 3. Understand and deploy the application
 
-Navigate to the `./Chart` folder and browse its contents. This contains a Helm chart for the application that will we modify.
+Navigate to the `./Chart` folder and browse its contents. This contains a Helm chart for the application that you will modify.
 
 Here are the contents of `./demo/Chart/templates/app.yaml`. This file is part of the Helm chart, and describes the container used for this tutorial:
 
@@ -96,16 +96,16 @@ spec:
         - containerPort: 3000
 ```
 
-The container that you will be working with is a TODO application that uses Redis as a database. 
+The container that you will be working with is a ToDo application that uses Redis as a database. 
 
 - The container is configured to listen on port 3000.
 - The container will use the environment variable `CONNECTION_REDIS_URL` to connect to Redis.
 - This `CONNECTION_REDIS_URL` environment variable is populated by a Kubernetes Secret.
 
-We can deploy this application for the first time by following these steps:
+You can deploy this application for the first time by following these steps:
 
 - Create the Kubernetes namespace `demo`
-- Create the Kubernetes Secret `redis-secret` holding the Redis URL.
+- Create the Kubernetes Secret `redis-secret` containing the Redis URL.
 - Install the Helm chart.
 
 {{< alert title="💡 Redis" color="info" >}}
@@ -163,15 +163,15 @@ NAME                             DESIRED   CURRENT   READY   AGE
 replicaset.apps/webapp-79d5dfb99   1         1         1       2m49s
 ```
 
-The generated names and ages of the objects will be different in your output. Make sure you see the status of `Running` for the `pod/webapp-...` entry. If the status is not `Running`, try repeating the `kubectl get all -n demo` after waiting.
+> The generated names and ages of the objects will be different in your output. Make sure you see the status of `Running` for the `pod/webapp-...` entry. If the status is not `Running`, try repeating the `kubectl get all -n demo` after waiting.
 
-At this point we've deployed the application but we have not actually used Radius yet. You will start doing that in the next step. You might also be wondering how we're going to use Redis as we have not set one up yet.
+At this point you've deployed the application but you have not actually used Radius yet. You will start doing that in the next step, as well as set up and use Redis.
 
 The steps so far are similar to how many applications are managed today:
 
-- Dependencies like Redis are provisioned manually and separately from application deployment.
-- Connection information like passwords and addresses is manually stored in secret stores.
-- Applications access the connection information from those secret stores when they are deployed.
+- ⬜️ Dependencies like Redis are provisioned manually and separately from application deployment.
+- ⬜️ Connection information like passwords and addresses is manually stored in secret stores.
+- ⬜️ Applications access the connection information from those secret stores when they are deployed.
 
 Over the next few steps you will update this application to use Radius so that:
 
@@ -179,9 +179,9 @@ Over the next few steps you will update this application to use Radius so that:
 - ✅ Connection information is managed automatically, secret stores are an implementation detail.
 - ✅ Applications have a documented relationship with the dependencies they connect to.
 
-From here you will go through a series of steps to incrementally add more of Radius' features to the application.
+From here you will go through a series of steps to incrementally add more Radius features to the application.
 
-## 5. Add Radius
+## 4. Add Radius
 
 Make sure the `app.yaml` file from `./demo/Chart/templates/app.yaml` is open in your editor. You will make some edits to this file to enable Radius.
 
@@ -203,7 +203,7 @@ spec:
 
 Adding the `radapp.io/enabled: 'true'` annotation enables Radius for the deployment.
 
-Now that you have made the edits, save the file, and deploy the application again using Helm. Since the namespace and secret have already been created, we only need to run the `helm` command.
+Save the file after you have made the edits and deploy the application again using Helm. Since the namespace and secret have already been created, we only need to run the `helm` command.
 
 ```bash
 helm upgrade demo ./Chart -n demo --install
@@ -224,7 +224,7 @@ TEST SUITE: None
 
 You should confirm that your output contains `REVISION: 2`, that means that the changes were applied.
 
-Run the following command to check if everything is running:
+Run the following command to confirm that everything is running:
 
 ```bash
 kubectl get all -n demo
@@ -246,7 +246,7 @@ replicaset.apps/webapp-79d5dfb99   1         1         1       10m
 
 Notice that the `AGE` of `pod/webapp-...` reflects the time of your **first** deployment. Enabling Radius for an application does not change any of its behaviors, so Kubernetes did not need to restart the container.
 
-Now that we've enabled Radius, run this command to display the state of the Radius application:
+Now that Radius has been enabled, run this command to display the state of the Radius application:
 
 ```bash
 rad app graph -a demo -g default-demo
@@ -262,21 +262,19 @@ Name: webapp (Applications.Core/containers)
 Connections: (none)
 Resources:
   webapp (kubernetes: apps/Deployment)
-
-
 ```
 
-Now Radius has found the Kubernetes `Deployment` running your container and cataloged it as part of the application. 
+This means that Radius has found the Kubernetes `Deployment` running your container and cataloged it as part of the application. 
 
 {{< alert title="💡 Application Name" color="info" >}}
 Radius will use the Kubernetes namespace as the application name by default. 
 {{< /alert >}}
 
-## 6. Add Recipe
+## 5. Add Recipe
 
 This step will add a database (Redis Cache) to the application.
 
-You can create a Redis Cache using [Recipes]({{< ref "guides/recipes/overview" >}}) provided by Radius. The Radius community provides Recipes for running commonly used application dependencies, including Redis.
+You can create a Redis Cache using [Recipes]({{< ref "guides/recipes/overview" >}}) provided by Radius. The Radius community provides [Recipes](https://github.com/radius-project/recipes) for running commonly used application dependencies, including Redis.
 
 In this step you will:
 
@@ -285,7 +283,7 @@ In this step you will:
 
 First, check recipes installed in your environment by running:
 
-```
+```bash
 rad recipe list
 ```
 
@@ -302,7 +300,7 @@ default   Applications.Datastores/mongoDatabases  bicep                         
 default   Applications.Datastores/redisCaches     bicep                            radius.azurecr.io/recipes/local-dev/rediscaches:latest
 ```
 
-The recipe for `Applications.Datastores/redisCaches` is the one that will be used in this example.
+The recipe for `Applications.Datastores/redisCaches` is what you will use in this example.
 
 {{< alert title="💡 Recipes" color="info" >}}
  Radius includes Recipes for local development when you use `rad init`. These **local-dev** Recipes run popular OSS technologies as containerized infrastructure without requiring a cloud account.
@@ -327,9 +325,9 @@ spec:
 Defining a `Recipe` object in Kubernetes will use a Radius Recipe to create dependencies for your application:
 
 - The `.spec.type` field defines the type of resource to create. `Applications.Datastores/redisCaches` is the type for a Redis Cache.
-- The `.spec.secretName` field tells Radius where to store connection information. This is optional, and should be used to interoperate with other Kubernetes technologies that read from secrets. In our case we're using the secret to populate an environment variable.
+- The `.spec.secretName` field tells Radius where to store connection information. This is optional, and should be used to interoperate with other Kubernetes technologies that read from secrets. This tutorial example uses the secret to populate an environment variable.
 
-Now that you have made the edits, save the file, and deploy the application again using Helm. Since the namespace and secret have already been created, we only need to run the `helm` command.
+Save the file after you have made the edits and deploy the application again using Helm. Since the namespace and secret have already been created, you only need to run the `helm` command.
 
 ```bash
 helm upgrade demo ./Chart -n demo --install
@@ -417,7 +415,7 @@ Resources:
 - Connections between resources: (none yet, you will add this next).
 - Resources that were created: see the Kubernetes `Deployment` listed for `webapp` and the Kubernetes `Deployment` and `Service` listed for `db`.
 
-The Redis Cache created by the recipe is visible as part of the application. You can also see the `Resources` created in Kubernetes that make up the Redis Cache. In a previous step you saw these listed by `kubectl`. Since Radius deployed the Recipe its know that these resources *logically* are part of the Redis Cache in the application.
+The Redis Cache created by the recipe is visible as part of the application. You can also see the `Resources` created in Kubernetes that make up the Redis Cache. In a previous step you saw these listed by `kubectl`. Since Radius deployed the Recipe, it knows that these resources *logically* are part of the Redis Cache in the application.
 
 You can also see the contents of `redis-secret` as created by Radius. Run the following command:
 
@@ -460,7 +458,7 @@ The actual values like `connectionString` are Base64 encoded in this display. Th
 
 ## 6. Add Connection
 
-At this point we have added Radius to our existing container, and used a Recipe to create a Redis Cache. In this step you will use Radius Connections to inject settings into the container instead of explicitly managing a secret.
+At this point you have added Radius to your existing container and used a Recipe to create a Redis Cache. In this step, you will use Radius Connections to inject settings into the container instead of explicitly managing a secret.
 
 Make sure the `app.yaml` file from `./demo/Chart/templates/app.yaml` is open in your editor.
 
@@ -484,15 +482,15 @@ spec:
 The `radapp.io/connection-` annotation defines a connection from the container to some other dependency. Each connection has:
 
 - A name: `redis` is the connection name this case.
-- A source: `db` is the name of the Recipe we created earlier.
+- A source: `db` is the name of the Recipe you created earlier.
 
 Connections are named because you can define many of them. The connection name is used to generate environment variables that are unique to the connection. 
 
-Since we're using a connection called `redis`, Radius will automatically define the `CONNECTION_REDIS_URL` environment variable. The prefix of `CONNECTION_REDIS_` will be combined with each of the settings that you could see in the `redis-secret` secret in the previous step.
+Since you're using a connection called `redis`, Radius will automatically define the `CONNECTION_REDIS_URL` environment variable. The prefix of `CONNECTION_REDIS_` will be combined with each of the settings that you could see in the `redis-secret` secret in the previous step.
 
-We can remove the manual definition of `CONNECTION_REDIS_URL` from `app.yaml` since Radius will provide it automatically. Find the `env` property and delete all of its contents. You can also remove `.spec.secretName` from the `Recipe`.
+You can remove the manual definition of `CONNECTION_REDIS_URL` from `app.yaml` since Radius will provide it automatically. Find the `env` property and delete all of its contents. You can also remove `.spec.secretName` from the `Recipe`.
 
-The final contents of app.yaml look like:
+The final contents of `app.yaml` should look like:
 
 ```yaml
 apiVersion: apps/v1
@@ -527,7 +525,8 @@ spec:
   type: Applications.Datastores/redisCaches
 ```
 
-Now that you have made the edits, save the file, and deploy the application again using Helm.
+Save the file after you have made the edits and deploy the application again using Helm.
+
 ```bash
 helm upgrade demo ./Chart -n demo --install
 ```
@@ -644,7 +643,7 @@ To delete your app, run the following command:
 helm uninstall demo -n demo
 ```
 
-In this tutorial you saw hands-on how-to:
+In summary, this tutorial walked through a hands-on example to show you how-to:
 
 - Enable Radius for a Helm or Kubernetes-based application to catalog your assets.
 - Use Recipes to create dependencies either for development or production use.
